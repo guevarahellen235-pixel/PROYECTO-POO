@@ -1,7 +1,8 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 from typing import List
 import uuid
+import threading
 
 from storage import cargar_db, guardar_db
 from generador_mapa import generar_partida
@@ -19,16 +20,19 @@ HOLISSS
 
 app = FastAPI(title="API Isla de las Reliquias")
 
+lock_db = threading.Lock()
+
+
 class CrearPartidaRequest(BaseModel):
-    jugadores: List[str]
+    jugadores: List[str] = Field(min_length=2, max_length=2)
 
 @app.post("/partidas")
 def crear_partida(request: CrearPartidaRequest):
-    db = cargar_db()
-    
     partida_id = f"PARTIDA-{str(uuid.uuid4())[:8].upper()}"
+    _, datos_partida = generar_partida(partida_id=partida_id)
     
-    matriz, datos_partida = generar_partida(partida_id=partida_id)
+    if datos_partida is None:
+        raise HTTPException(status_code=500, detail="No se pudo generar un mapa valido")
     
     nueva_partida = {
         "partidaId": partida_id,
@@ -47,7 +51,9 @@ def crear_partida(request: CrearPartidaRequest):
     }
     
     # Guardamos en el storage
-    db["partidas"][partida_id] = nueva_partida
-    guardar_db(db)
+    with lock_db:
+        db = cargar_db()
+        db["partidas"][partida_id] = nueva_partida
+        guardar_db(db)
     
     return {"mensaje": "Partida generada con éxito", "partida": nueva_partida}

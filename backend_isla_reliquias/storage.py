@@ -1,6 +1,7 @@
 import os
 import json
 import tempfile
+import copy
 
 """
 * configura la carpeta y el archivo donde se va a guardar toda la informacion del juego (db_expedicion.json)
@@ -25,7 +26,7 @@ def cargar_db():
     if not os.path.exists(DB_FILE):
         os.makedirs(DATA_DIR, exist_ok=True)
         guardar_db(DB_INICIAL)
-        return DB_INICIAL
+        return copy.deepcopy(DB_INICIAL)
 
     with open(DB_FILE, "r", encoding="utf-8") as f:
         return json.load(f)

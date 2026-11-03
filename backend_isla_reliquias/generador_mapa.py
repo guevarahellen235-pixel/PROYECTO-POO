@@ -1,5 +1,4 @@
 import numpy as np
-from colorama import Back, Fore, Style, init
 from collections import deque
 import random
 import string
@@ -11,33 +10,10 @@ MAXIMO_CANDIDATOS = 1000
 
 CANTIDAD_POR_TIPO = {"C": 1, "X": 1, "T": 4, "P": 4, "S": 15}
 
-NOMBRE_POR_TIPO = {
-    "C": "Campamento",
-    "S": "Sendero",
-    "P": "Pantano",
-    "T": "Templo",
-    "X": "Cofre"
-}
-
-COLOR_POR_TIPO = {
-    "C": Back.GREEN,
-    "S": Back.WHITE,
-    "P": Back.MAGENTA,
-    "T": Back.CYAN,
-    "X": Back.YELLOW
-}
-
-
 def convertir_a_coordenada(fila, columna):
     letra_columna = chr(ord("A") + columna)
     numero_fila = fila + 1
     return letra_columna + str(numero_fila)
-
-
-def convertir_a_indices(coordenada):
-    columna = ord(coordenada[0].upper()) - ord("A")
-    fila = int(coordenada[1:]) - 1
-    return fila, columna
 
 
 def obtener_vecinos(fila, columna):
@@ -145,9 +121,7 @@ def validar_tablero(matriz_tablero):
 
     parejas_validas = []
     for i in range(len(posiciones_templos)):
-        for j in range(len(posiciones_templos)):
-            if i == j:
-                continue
+        for j in range(i +1, len(posiciones_templos)):
             t1 = posiciones_templos[i]
             t2 = posiciones_templos[j]
 
@@ -158,11 +132,11 @@ def validar_tablero(matriz_tablero):
             if dist_t1_t2 is None:
                 continue
 
-            ruta1 = distancias_c_templos[t1] + dist_t1_t2 + distancias_c_templos[t2] + (2 * dist_c_x)
-            ruta2 = distancias_c_templos[t2] + dist_t1_t2 + distancias_c_templos[t1] + (2 * dist_c_x)
+            ruta = distancias_c_templos[t1] + dist_t1_t2 + distancias_c_templos[t2] + (2 * dist_c_x)
 
             if min(ruta1, ruta2) <= 12:
                 parejas_validas.append((t1, t2))
+                parejas_validas.append((t2, t1))
 
     if not parejas_validas:
         return None
@@ -277,97 +251,3 @@ def generar_partida(semilla=None, campamento_anterior=None, cofre_anterior=None,
         return matriz_tablero, datos_partida
 
     return None, None
-
-
-
-def crear_jugador(nombre, posicion_inicial, color_texto, color_fondo):
-    jugador = {
-        "nombre": nombre,
-        "posicion": posicion_inicial,
-        "color_texto": color_texto,
-        "color_fondo": color_fondo
-    }
-    return jugador
-
-
-def crear_jugadores(datos_partida):
-    posicion_campamento = convertir_a_indices(datos_partida["campamento"])
-    primer_jugador = crear_jugador("Jugador 1", posicion_campamento, Fore.RED, Back.RED)
-    segundo_jugador = crear_jugador("Jugador 2", posicion_campamento, Fore.BLUE, Back.BLUE)
-    return [primer_jugador, segundo_jugador]
-
-
-def obtener_posicion_jugador(jugador):
-    return jugador["posicion"]
-
-
-def obtener_coordenada_jugador(jugador):
-    posicion = obtener_posicion_jugador(jugador)
-    return convertir_a_coordenada(posicion[0], posicion[1])
-
-
-def obtener_tipo_casilla_jugador(matriz_tablero, jugador):
-    posicion = obtener_posicion_jugador(jugador)
-    tipo_casilla = matriz_tablero[posicion[0]][posicion[1]]
-    return NOMBRE_POR_TIPO[tipo_casilla]
-
-
-def obtener_jugadores_en_casilla(lista_jugadores, fila, columna):
-    jugadores_encontrados = []
-
-    for jugador in lista_jugadores:
-        posicion = obtener_posicion_jugador(jugador)
-        if posicion[0] == fila and posicion[1] == columna:
-            jugadores_encontrados.append(jugador)
-
-    return jugadores_encontrados
-
-
-def mostrar_ubicacion_jugador(matriz_tablero, jugador):
-    coordenada = obtener_coordenada_jugador(jugador)
-    nombre_casilla = obtener_tipo_casilla_jugador(matriz_tablero, jugador)
-    print(jugador["color_texto"] + jugador["nombre"] + Style.RESET_ALL, "esta en", coordenada, "(" + nombre_casilla + ")")
-
-
-def mostrar_ubicacion_todos_los_jugadores(matriz_tablero, lista_jugadores):
-    for jugador in lista_jugadores:
-        mostrar_ubicacion_jugador(matriz_tablero, jugador)
-
-
-#esto de imprimir tablero maybe lo borremos
-
-"""
-def imprimir_tablero(matriz_tablero, lista_jugadores):
-    print()
-    encabezado = "       "
-    for columna in range(CANTIDAD_COLUMNAS):
-        encabezado = encabezado + chr(ord("A") + columna) + "      "
-    print(encabezado)
-
-    for fila in range(CANTIDAD_FILAS):
-        linea = "  " + str(fila + 1) + "   "
-
-        for columna in range(CANTIDAD_COLUMNAS):
-            tipo_casilla = matriz_tablero[fila][columna]
-            jugadores_en_casilla = obtener_jugadores_en_casilla(lista_jugadores, fila, columna)
-
-            color_casilla = COLOR_POR_TIPO[tipo_casilla]
-            linea = linea + color_casilla + Fore.BLACK + " " + tipo_casilla + " "
-
-            for jugador in jugadores_en_casilla:
-                linea = linea + jugador["color_texto"] + Style.BRIGHT + "●" + Style.NORMAL + Fore.BLACK
-
-            for relleno in range(2 - len(jugadores_en_casilla)):
-                linea = linea + " "
-
-            linea = linea + " " + Style.RESET_ALL + " "
-
-        print(linea)
-        print()
-"""
-
-
-if __name__ == "__main__":
-    matriz_resultado, datos_resultado = generar_partida()
-    jugadores_partida = crear_jugadores(datos_resultado)
-    #imprimir_tablero(matriz_resultado, jugadores_partida)
