@@ -1,12 +1,12 @@
-package SistemaDeTurnos;
+package SistemaTurnos;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GestorTurnos {
 
-    public static final int RondasTotales = 8;
-    public static final int AccionesPorTurno = 3;
+    public static final int RONDAS_TOTALES = 8;
+    public static final int ACCIONES_POR_TURNO = 3;
     public static final String EstadoEnCurso = "EN_CURSO";
     public static final String EstadoFinal = "FINALIZADA";
 
@@ -33,7 +33,7 @@ public class GestorTurnos {
         indiceJugadorActual = 0;
         ronda = 1;
         partidaFinalizada = false;
-        turnoActual = new Turno(ordenJugadores.get(indiceJugadorActual), AccionesPorTurno);
+        turnoActual = new Turno(ordenJugadores.get(indiceJugadorActual), ACCIONES_POR_TURNO);
     }
 
     public void restaurar(EstadoTurnos estadoGuardado) {
@@ -89,14 +89,14 @@ public class GestorTurnos {
             siguienteRonda = siguienteRonda + 1;
         }
 
-        if (siguienteRonda > RondasTotales) {
+        if (siguienteRonda > RONDAS_TOTALES) {
             partidaFinalizada = true;
             return;
         }
 
         indiceJugadorActual = siguienteIndice;
         ronda = siguienteRonda;
-        turnoActual = new Turno(ordenJugadores.get(indiceJugadorActual), AccionesPorTurno);
+        turnoActual = new Turno(ordenJugadores.get(indiceJugadorActual), ACCIONES_POR_TURNO);
     }
 
     public EstadoTurnos obtenerEstado() {
