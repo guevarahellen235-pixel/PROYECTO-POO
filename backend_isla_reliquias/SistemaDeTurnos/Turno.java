@@ -1,4 +1,4 @@
-package SistemaDeTurnos;
+package SistemaTurnos;
 
 public class Turno {
 
