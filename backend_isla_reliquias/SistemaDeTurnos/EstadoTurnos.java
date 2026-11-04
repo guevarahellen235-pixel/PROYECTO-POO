@@ -1,4 +1,4 @@
-package SistemaDeTurnos;
+package SistemaTurnos;
 
 import java.util.ArrayList;
 import java.util.List;
