@@ -4,11 +4,13 @@ import random
 import string
 from crypto_service import CryptoService
 
+
 CANTIDAD_FILAS = 5
 CANTIDAD_COLUMNAS = 5
 MAXIMO_CANDIDATOS = 1000
 
 CANTIDAD_POR_TIPO = {"C": 1, "X": 1, "T": 4, "P": 4, "S": 15}
+
 
 def convertir_a_coordenada(fila, columna):
     letra_columna = chr(ord("A") + columna)
@@ -43,7 +45,7 @@ def buscar_posiciones(matriz_tablero, tipo_casilla):
     return lista_posiciones
 
 """
-holisss, la funcion "distancia_sin_pantanos"  calcula el camino más
+La funcion "distancia_sin_pantanos"  calcula el camino más
 corto en numero de casillas entre la posicion inicial y el destino, limitando a que:
 
 1 - solo se pueden hacer movimientos de arriba, abajo, derecha e izquierda.
@@ -79,7 +81,7 @@ def distancia_sin_pantanos(matriz_tablero, origen, destino):
     return None
 
 """
-holisss, al validar_tablero de ernesto le agregue esto para que cumpla mas las reglas del juego:
+Al validar_tablero de ernesto le agregue esto para que cumpla mas las reglas del juego:
 
 * una funcion que calcula la distancia mas corta caminando normal y por los pantanos no se puede pasar
 * ahora no acepta un mapa si no tiene al menos un templo a 2 pasos o menos de la base
@@ -120,8 +122,9 @@ def validar_tablero(matriz_tablero):
         return None
 
     parejas_validas = []
+    # la distancia es simetrica, asi que solo se calcula una vez por pareja (j > i)
     for i in range(len(posiciones_templos)):
-        for j in range(i +1, len(posiciones_templos)):
+        for j in range(i + 1, len(posiciones_templos)):
             t1 = posiciones_templos[i]
             t2 = posiciones_templos[j]
 
@@ -134,7 +137,7 @@ def validar_tablero(matriz_tablero):
 
             ruta = distancias_c_templos[t1] + dist_t1_t2 + distancias_c_templos[t2] + (2 * dist_c_x)
 
-            if min(ruta1, ruta2) <= 12:
+            if ruta <= 12:
                 parejas_validas.append((t1, t2))
                 parejas_validas.append((t2, t1))
 
@@ -167,7 +170,7 @@ def generar_matriz_aleatoria():
     return matriz_tablero
 
 """
-holisss, a generar_partida le agregue esto para armar el juego completo con las reglas del pdf:
+A generar_partida le agregue esto para armar el juego completo con las reglas del pdf:
 * ahora genera dos pistas: la pista 1 con 6 letras y la pista 2 con 4 digitos que se unen con un guion para la clave
 * reparte al azar las 4 reliquias normales con sus valores exactos de 1, 2, 2 y 3 puntos entre los 4 templos
 * esconde las dos pistas en los dos templos que cumplieron la ruta y deja los otros dos solo con su reliquia

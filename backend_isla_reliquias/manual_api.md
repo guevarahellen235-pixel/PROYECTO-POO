@@ -20,7 +20,10 @@ Entra en tu navegador a: **http://127.0.0.1:8000/docs**
 3. Pega este código en la caja de texto:
 ```json
 {
-  "jugadores": ["alias1", "alias2"]
+  "jugadores": [
+    "Jugador1",
+    "Jugador2"
+  ]
 }
 ```
 4. Presiona el botón azul **"Execute"**.

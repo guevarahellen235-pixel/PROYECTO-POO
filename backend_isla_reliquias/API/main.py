@@ -8,8 +8,6 @@ from storage import cargar_db, guardar_db
 from generador_mapa import generar_partida
 
 """
-HOLISSS
-
 * usa FastAPI para crear la ruta "POST /partidas" que conecta por donde el programa en Java va a pedir crear los juegos
 * recibe la lista de alias de los jugadores y le inventa un ID unico a esa partida (tipo PARTIDA-A1B2C3D4)
 * llama a tu función de generador_mapa.py para que fabrique un tablero nuevo en el momento
@@ -20,8 +18,8 @@ HOLISSS
 
 app = FastAPI(title="API Isla de las Reliquias")
 
+# evita que dos peticiones al mismo tiempo se pisen al guardar el json
 lock_db = threading.Lock()
-
 
 class CrearPartidaRequest(BaseModel):
     jugadores: List[str] = Field(min_length=2, max_length=2)
@@ -29,6 +27,7 @@ class CrearPartidaRequest(BaseModel):
 @app.post("/partidas")
 def crear_partida(request: CrearPartidaRequest):
     partida_id = f"PARTIDA-{str(uuid.uuid4())[:8].upper()}"
+    
     _, datos_partida = generar_partida(partida_id=partida_id)
     
     if datos_partida is None:
