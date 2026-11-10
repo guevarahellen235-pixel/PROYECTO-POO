@@ -1,3 +1,12 @@
+"""
+* usa FastAPI para crear la ruta "POST /partidas" que conecta por donde el programa en Java va a pedir crear los juegos
+* recibe la lista de alias de los jugadores y le inventa un ID unico a esa partida (tipo PARTIDA-A1B2C3D4)
+* llama a tu función de generador_mapa.py para que fabrique un tablero nuevo en el momento
+* guarda todo el mapa, las coordenadas, el cofre cifrado y las pistas en un archivo json
+* manda esos datos ordenados a storage.py para que se guarden
+* por ultimo le devuelve todo el mapa y los datos listos al cliente para que puedan empezar a jugar
+"""
+
 import copy
 import random
 import re
@@ -16,6 +25,7 @@ from generador_mapa import generar_partida
 
 app = FastAPI(title="API Expedición Isla de las Reliquias", version="2.0.0", description="Backend para la gestión de jugadores y partidas.")
 
+# evita que dos peticiones al mismo tiempo se pisen al guardar el json
 lock_db = threading.RLock()
 BASE = "/api/v1"
 
@@ -232,7 +242,9 @@ def crear_partida(request: CrearPartida):
         db["partidas"][partida_id] = partida
         db["requests_partidas"][request.requestId] = {"jugadores": request.jugadores, "partidaId": partida_id}
 
+        # Guardamos en el storage
         guardar_db(db)
+
         return publica(partida)
 
 
